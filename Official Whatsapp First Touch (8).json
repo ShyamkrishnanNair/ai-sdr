@@ -1,0 +1,1731 @@
+{
+  "name": "Official Whatsapp First Touch",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v3/objects/deals/{{ $json.dealId }}/associations/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "10bc8be2-0937-43cd-9252-665a49bed822",
+      "name": "HTTP Request",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "9gmsNGzxouHvcbQ6",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0fcf892-a050-40d6-938f-5b53b11dc1f1",
+              "name": "Full Name",
+              "value": "={{ $json.properties.firstname.value }}",
+              "type": "string"
+            },
+            {
+              "id": "6ddbe9c5-cccd-4fe6-b8c5-9ac9720e1615",
+              "name": "Number",
+              "value": "={{ '91' + $json.properties.phone.value.replace(/[^0-9]/g, '').slice(-10) }}",
+              "type": "string"
+            },
+            {
+              "id": "c57e6bf2-28b2-444f-9040-9c419b5aa353",
+              "name": "Lead Email",
+              "value": "={{ $json.properties.email.value }}",
+              "type": "string"
+            },
+            {
+              "id": "0204c5c4-aaa3-4e5e-b179-15e53a343b6d",
+              "name": "Status",
+              "value": "PENDING",
+              "type": "string"
+            },
+            {
+              "id": "3ff1f098-92cc-4804-967c-2b2d74aa2e4a",
+              "name": "Form Name",
+              "value": "={{ $json.properties.contact_source.value }}",
+              "type": "string"
+            },
+            {
+              "id": "0299a701-9c4d-4b3d-ab10-b27055e2ce49",
+              "name": "Deal Owner",
+              "value": "={{ $json.properties.sdr_owner_name }}",
+              "type": "string"
+            },
+            {
+              "id": "e7d10f15-76d7-4ca3-96ec-54873b91bf84",
+              "name": "Deal Owner Number",
+              "value": "={{ $json.properties.sdr_owner_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "3c376b24-03d6-468e-8beb-004042042f01",
+              "name": "Deal Owner Email",
+              "value": "={{ $json.properties.sdr_owner_email }}",
+              "type": "string"
+            },
+            {
+              "id": "a369b005-f33a-42df-bad1-5f469669fd4a",
+              "name": "Deal Id",
+              "value": "={{ $('Webhook').first().json.body[0].objectId }}",
+              "type": "string"
+            },
+            {
+              "id": "25a62f4b-eb5a-49f9-9cc9-b6efbdb17c47",
+              "name": "Owner_ID",
+              "value": "={{ $json.properties.hubspot_owner_id.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        576,
+        0
+      ],
+      "id": "d825ce81-7f7b-4588-8516-53463cc31552",
+      "name": "Contact Data"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/hubspot-deal-create-for-whatsapp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -736,
+        0
+      ],
+      "id": "a2bf7339-4b0b-43c4-b4c7-f432ed6e1796",
+      "name": "Webhook",
+      "webhookId": "3bcdb25b-dfc5-4bae-a39a-f4cc221eeeda"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        784,
+        0
+      ],
+      "id": "dd04803d-9aaf-4c31-b3d3-1980c14d6f6b",
+      "name": "Process One at a Time"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "35514fef-4398-4941-a3c3-3202491d1f49",
+              "leftValue": "={{ $json.properties.hs_object_source_detail_1.value }}",
+              "rightValue": "AiA Marketing",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -304,
+        0
+      ],
+      "id": "235e843e-502a-43ea-9a01-cc8edab9c51a",
+      "name": "If AiA Deal"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "deal",
+        "operation": "get",
+        "dealId": {
+          "__rl": true,
+          "value": "={{ $json.body[0].objectId }}",
+          "mode": "id"
+        },
+        "filters": {
+          "propertiesCollection": {
+            "propertiesValues": {
+              "properties": [
+                "am_deal_owner"
+              ]
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        0
+      ],
+      "id": "c1bda98d-2f25-4630-aa9e-878b241124d4",
+      "name": "Get Deal from HubSpot",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "AK1A6aKHxBE0E4DK",
+          "name": "HubSpot account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $json.results[0].id }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        0
+      ],
+      "id": "410bf66c-9aea-4552-aee7-357d92399000",
+      "name": "Get Contact Data from HubSpot",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "9gmsNGzxouHvcbQ6",
+          "name": "HubSpot account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGQRaqljlapDPAD",
+          "mode": "list",
+          "cachedResultName": "Sent - Whatsapp First Touch",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblGQRaqljlapDPAD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name ": "={{ $json[\"Full Name\"] }}",
+            "Number": "={{ $json.Number }}",
+            "Form Submitted": "={{ $json[\"Form Name\"] }}",
+            "Status": "PENDING",
+            "Deal Owner Number": "={{ $json[\"Deal Owner Number\"] }}",
+            "Deal Owner": "={{ $json[\"Deal Owner\"] }}",
+            "Deal Owner Email": "={{ $json[\"Deal Owner Email\"] }}",
+            "Lead Email": "={{ $json[\"Lead Email\"] }}",
+            "Current_Stage": "First Touch",
+            "Deal ID": "={{ $json[\"Deal Id\"] }}",
+            "Deal Owner ID": "={{ $json.Owner_ID }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name ",
+              "displayName": "Full Name ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Current_Stage",
+              "displayName": "Current_Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Form Submitted",
+              "displayName": "Form Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner",
+              "displayName": "Deal Owner",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sent",
+              "displayName": "Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Delivered",
+              "displayName": "Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Read",
+              "displayName": "Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reply Received",
+              "displayName": "Reply Received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "whatsapp_first_touch_1 ",
+                  "value": "whatsapp_first_touch_1 "
+                },
+                {
+                  "name": "whatsapp_first_touch_with_sdr_1 ",
+                  "value": "whatsapp_first_touch_with_sdr_1 "
+                },
+                {
+                  "name": "2_whatsapp_first_touch_with_sdr",
+                  "value": "2_whatsapp_first_touch_with_sdr"
+                },
+                {
+                  "name": "3_whatsapp_first_touch_with_sdr",
+                  "value": "3_whatsapp_first_touch_with_sdr"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sent Message ",
+              "displayName": "Sent Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "05304685-2657-414d-b889-98c2f25382a6",
+      "name": "Create First Touch Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const idToDetails = {\n  \"1080465166\": { name: \"Debkanta Nayak\", phone: \"+91 6364835217\", email: \"Debkanta@Karboncard.com\" },\n  \"1506890440\": { name: \"Harsh Khatri\", phone: \"+91 8904987623\", email: \"Harsh.K@Karboncard.com\" },\n  \"2072897526\": { name: \"Abhishek Bhuyan\", phone: \"+91 7204085862\", email: \"Abhishek.Bhuyan@Karboncard.com\" },\n  \"1403787293\": { name: \"Himanshu Sharma\", phone: \"+91 7411724400\", email: \"Himanshu.Sharma@Karboncard.com\" },\n  \"2077986535\": { name: \"Nanditha V\", phone: \"+91 7204385841\", email: \"Nanditha.Vishakanta@Karboncard.com\" },\n  \"78054956\":   { name: \"Eshita Chauhan\", phone: \"+91 8123107947\", email: \"Eshita.Chauhan@Karboncard.com\" },\n  \"78373572\":   { name: \"Vasanthan B\", phone: \"+91 8050769512\", email: \"Vasanthan.B@Karboncard.com\" },\n  \"81455872\":   { name: \"Abhignan Rakshith\", phone: \"+91 8050025676\", email: \"Abhignan.Rakshith@Karboncard.com\" },\n  \"81455848\":   { name: \"Jeffrey Benjamin\", phone: \"+91 6364360114\", email: \"Jeffrey.Benjamin@Karboncard.com\" },\n  \"81772170\":  { name: \"Ashrith Vathsala\", phone: \"+91 8431037348\", email: \"Ashrith.Vathsala1@Karboncard.com\" }\n};\n\nconst item = items[0];\nconst ownerId = item.json.properties.hubspot_owner_id?.value;\n\nconst details = idToDetails[ownerId] || {\n  name: \"AI Accountant\",\n  phone: \"9008770403\",\n  email: \"hi@aiaccountant.com\"\n};\n\nitem.json.properties.sdr_owner_name = details.name;\nitem.json.properties.sdr_owner_phone = details.phone;\nitem.json.properties.sdr_owner_email = details.email;\n\nreturn [item];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        0
+      ],
+      "id": "1688af7d-011a-4fbd-aa52-e594712921b5",
+      "name": "Deal_Owner_Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.message_status }}",
+              "rightValue": "accepted",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7f64023b-77f3-4747-955c-e226160387f8"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        544,
+        496
+      ],
+      "id": "dcb2fe9f-355a-494f-85e0-3298121ebf21",
+      "name": "Check if Success1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGQRaqljlapDPAD",
+          "mode": "list",
+          "cachedResultName": "Sent - Whatsapp First Touch",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblGQRaqljlapDPAD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Number": "={{ $json.number }}",
+            "Status": "ACCEPTED",
+            "Template Used": "={{ $json.template_sent }}"
+          },
+          "matchingColumns": [
+            "Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name ",
+              "displayName": "Full Name ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Current_Stage",
+              "displayName": "Current_Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Form Submitted",
+              "displayName": "Form Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner",
+              "displayName": "Deal Owner",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sent",
+              "displayName": "Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Delivered",
+              "displayName": "Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Read",
+              "displayName": "Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reply Received",
+              "displayName": "Reply Received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "whatsapp_first_touch_1 ",
+                  "value": "whatsapp_first_touch_1 "
+                },
+                {
+                  "name": "whatsapp_first_touch_with_sdr_1 ",
+                  "value": "whatsapp_first_touch_with_sdr_1 "
+                },
+                {
+                  "name": "2_whatsapp_first_touch_with_sdr",
+                  "value": "2_whatsapp_first_touch_with_sdr"
+                },
+                {
+                  "name": "3_whatsapp_first_touch_with_sdr",
+                  "value": "3_whatsapp_first_touch_with_sdr"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sent Message ",
+              "displayName": "Sent Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calculation",
+              "displayName": "Calculation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        832,
+        368
+      ],
+      "id": "12ecefff-ba09-4bd1-81b3-bba1141a10b9",
+      "name": "Update Status - ACCEPTED1",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGQRaqljlapDPAD",
+          "mode": "list",
+          "cachedResultName": "Sent - Whatsapp First Touch",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblGQRaqljlapDPAD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "FAILED",
+            "Number": "={{ $json.number }}",
+            "Error Message": "={{ $json.error?.message || $json.error || 'Unknown error' }}",
+            "Template Used": "={{ $json.template_sent }}"
+          },
+          "matchingColumns": [
+            "Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name ",
+              "displayName": "Full Name ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Current_Stage",
+              "displayName": "Current_Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Form Submitted",
+              "displayName": "Form Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner",
+              "displayName": "Deal Owner",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sent",
+              "displayName": "Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Delivered",
+              "displayName": "Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Read",
+              "displayName": "Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reply Received",
+              "displayName": "Reply Received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "whatsapp_first_touch_1 ",
+                  "value": "whatsapp_first_touch_1 "
+                },
+                {
+                  "name": "whatsapp_first_touch_with_sdr_1 ",
+                  "value": "whatsapp_first_touch_with_sdr_1 "
+                },
+                {
+                  "name": "2_whatsapp_first_touch_with_sdr",
+                  "value": "2_whatsapp_first_touch_with_sdr"
+                },
+                {
+                  "name": "3_whatsapp_first_touch_with_sdr",
+                  "value": "3_whatsapp_first_touch_with_sdr"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Sent Message ",
+              "displayName": "Sent Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        512
+      ],
+      "id": "bcd93b10-0288-4b01-8621-16f46d0dad29",
+      "name": "Update Status - FAILED1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b9d735f8-5c53-4df9-9235-1df4e1e05ec1",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "0",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b952b44a-c301-4c51-b4d5-51b977275917",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c824a545-3d2a-4c94-b43a-b2a625af56b8",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -256,
+        464
+      ],
+      "id": "79056584-b33b-47b7-8089-fcc2d5519fdb",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18a36e00-38bf-4c1d-90ed-086ab00b9818",
+              "name": "random_index",
+              "value": "={{ Math.floor(Math.random() * 3).toString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        480
+      ],
+      "id": "17bafa72-3ab2-4488-9376-4a4aa086e5e4",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "3_whatsapp_first_touch_with_sdr|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        672
+      ],
+      "id": "af680331-b55c-4894-898e-2e148d54209f",
+      "name": "Send Whatsapp First Touch Mesage3",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "3_whatsapp_first_touch_with_sdr",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        672
+      ],
+      "id": "b227cb0f-aa93-4d76-9314-30f5018b2a35",
+      "name": "Attach Template Name 3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "2_whatsapp_first_touch_with_sdr",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        480
+      ],
+      "id": "dca6aaa3-4a84-40a9-9b51-ffbd8973da52",
+      "name": "Attach Template Name 2"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "2_whatsapp_first_touch_with_sdr|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        480
+      ],
+      "id": "c70d9fd8-a205-4209-8d05-5ff377b7dae6",
+      "name": "Send Whatsapp First Touch Mesage4",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "whatsapp_first_touch_with_sdr_1",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        288
+      ],
+      "id": "d54a3917-996b-448d-b677-2ce92118c40d",
+      "name": "Attach Template Name "
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "whatsapp_first_touch_with_sdr_1|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        288
+      ],
+      "id": "e2db23e0-f99d-4c01-974a-b1b0ddf35211",
+      "name": "Send Whatsapp First Touch Mesage",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -704,
+        480
+      ],
+      "id": "baf3e0b8-f99e-4bc4-a426-feb597bca35c",
+      "name": "Wait 15 Seconds",
+      "webhookId": "267fe3dc-b7ce-48fb-9c7a-ce2999b377e0"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Data from HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Data": {
+      "main": [
+        [
+          {
+            "node": "Process One at a Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Deal from HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process One at a Time": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Create First Touch Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If AiA Deal": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Deal from HubSpot": {
+      "main": [
+        [
+          {
+            "node": "If AiA Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Data from HubSpot": {
+      "main": [
+        [
+          {
+            "node": "Deal_Owner_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create First Touch Record": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal_Owner_Data": {
+      "main": [
+        [
+          {
+            "node": "Contact Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Success1": {
+      "main": [
+        [
+          {
+            "node": "Update Status - ACCEPTED1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status - FAILED1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status - ACCEPTED1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Update Status - FAILED1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage3": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name 3": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name 2": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage4": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name ": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ff6fa787-8cb0-42c9-bff8-0d139fd5b324",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45745a8adebf972591cb1c34947d7982ccae58966ae55502975d349f81f9d3fe"
+  },
+  "id": "EY7FVSuoZIo6hfkG",
+  "tags": []
+}

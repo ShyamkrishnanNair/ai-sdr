@@ -1,0 +1,270 @@
+{
+  "name": "Demo Reminder Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9b441d27-4491-4c99-9ea6-9bcfb89714b4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZpcZwRwnPZUF4o",
+          "mode": "list",
+          "cachedResultName": "Demo Scheduled by AI SDR",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblZpcZwRwnPZUF4o"
+        },
+        "filterByFormula": "=SEARCH(DATETIME_FORMAT(TODAY(), 'YYYY-MM-DD'), {Demo_Date_Only})",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "237e494b-1798-437b-a7e6-9b67ac379003",
+      "name": "Search records",
+      "executeOnce": false,
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.Number }}",
+        "template": "demo_today_reminder|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.Name }}"
+                  },
+                  {
+                    "text": "={{ $json[\"Demo Scheduled\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6e142923-11dc-43b4-a73a-dd9b4635020c",
+      "name": "Send template",
+      "webhookId": "8b3e1c81-1563-4140-947c-54007844ff73",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZpcZwRwnPZUF4o",
+          "mode": "list",
+          "cachedResultName": "Demo Scheduled by AI SDR",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblZpcZwRwnPZUF4o"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Reminder Sent": "Yes",
+            "Number": "={{ $json.contacts[0].wa_id }}"
+          },
+          "matchingColumns": [
+            "Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "SDR",
+              "displayName": "SDR",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Demo Scheduled",
+              "displayName": "Demo Scheduled",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Demo_Date_Only",
+              "displayName": "Demo_Date_Only",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Reminder Sent",
+              "displayName": "Reminder Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "cd397eca-176b-4c75-9a1e-bcca053d1c19",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "30d9885c-6a73-4607-a66b-bef169e8ca3a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45745a8adebf972591cb1c34947d7982ccae58966ae55502975d349f81f9d3fe"
+  },
+  "id": "983BKduhlQutzmm0",
+  "tags": []
+}
