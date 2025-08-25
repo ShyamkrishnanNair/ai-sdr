@@ -1,0 +1,1811 @@
+{
+  "name": "DNP Follow-up Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://api.hubapi.com/crm/v3/objects/deals/{{ $json.body.dealId }}/associations/contacts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "hubspotOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        208,
+        -16
+      ],
+      "id": "3f0af08f-5783-490c-af5f-7a2816689023",
+      "name": "HTTP Request - Get Associated Contacts",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "algTbsYxHorUvjgn",
+          "name": "HubSpot account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "get",
+        "contactId": {
+          "__rl": true,
+          "value": "={{ $json.results[0].id }}",
+          "mode": "id"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.1,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "2f0c64b5-23de-426f-9579-b53250e55088",
+      "name": "Get Contact Data from HubSpot",
+      "credentials": {
+        "hubspotOAuth2Api": {
+          "id": "algTbsYxHorUvjgn",
+          "name": "HubSpot account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "48ad9e35-a09b-4bbe-8043-b933c73bd52a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        -16
+      ],
+      "id": "f6bebf2b-dae9-4353-9c2e-6100e711710a",
+      "name": "Webhook",
+      "webhookId": "48ad9e35-a09b-4bbe-8043-b933c73bd52a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.message_status }}",
+              "rightValue": "accepted",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "id": "7f64023b-77f3-4747-955c-e226160387f8"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        512
+      ],
+      "id": "bb9d45b7-0339-4109-9179-7c3cd9e2cf81",
+      "name": "Check if Success1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b9d735f8-5c53-4df9-9235-1df4e1e05ec1",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "0",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b952b44a-c301-4c51-b4d5-51b977275917",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c824a545-3d2a-4c94-b43a-b2a625af56b8",
+                    "leftValue": "={{ $json.random_index }}",
+                    "rightValue": "2",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        400,
+        480
+      ],
+      "id": "dd56f42c-d577-4354-9a7d-2eaf2a9e1415",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18a36e00-38bf-4c1d-90ed-086ab00b9818",
+              "name": "random_index",
+              "value": "={{ Math.floor(Math.random() * 3).toString() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        176,
+        496
+      ],
+      "id": "7fb70203-0de6-4064-a672-a335f93aa8f2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "t3_dnp_followup1|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        688
+      ],
+      "id": "693d1aef-837e-4761-a986-1b375ac1aa5b",
+      "name": "Send Whatsapp First Touch Mesage3",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "t3_dnp_followup1",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        688
+      ],
+      "id": "2417014f-53e9-4439-95b7-a116d5def05c",
+      "name": "Attach Template Name 3"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "t2_dnp_followup1",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        496
+      ],
+      "id": "f65eb71c-d6d1-47da-9381-a53b8a4217df",
+      "name": "Attach Template Name 2"
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "t2_dnp_followup1|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        496
+      ],
+      "id": "db6ac1dc-6ca5-4dbd-9263-bb18c36b9b21",
+      "name": "Send Whatsapp First Touch Mesage4",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f92b63f8-54ea-4e68-81ab-4726e9b6e446",
+              "name": "template_sent",
+              "value": "t1_dnp_followup1",
+              "type": "string"
+            },
+            {
+              "id": "46d55fd5-2034-4afa-8ffd-e834b33f7c80",
+              "name": "message_status",
+              "value": "={{ $json.messages?.[0]?.message_status || 'failed' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6451c3-f9fe-46b2-b019-f3839ec3d02f",
+              "name": "number",
+              "value": "={{ $json.contacts?.[0]?.wa_id || $('Edit Fields1').item.json.fields.Number }}",
+              "type": "string"
+            },
+            {
+              "id": "error-handling",
+              "name": "error",
+              "value": "={{ $json.error || null }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        848,
+        304
+      ],
+      "id": "d8354956-d63a-493b-a251-00c1ff80674d",
+      "name": "Attach Template Name "
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "683994411464564",
+        "recipientPhoneNumber": "={{ $json.fields.Number }}",
+        "template": "t1_dnp_followup1|en",
+        "components": {
+          "component": [
+            {
+              "bodyParameters": {
+                "parameter": [
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner\"] }}"
+                  },
+                  {
+                    "text": "={{ $json.fields[\"Deal Owner Number\"] }}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1,
+      "position": [
+        624,
+        304
+      ],
+      "id": "6c6f140c-ecd1-4ba4-96a0-4776f252ad2a",
+      "name": "Send Whatsapp First Touch Mesage",
+      "webhookId": "fdf1a5de-5987-4651-a5e0-8306a9efc1ec",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "zizchXphgW88Um7w",
+          "name": "WhatsApp account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -48,
+        496
+      ],
+      "id": "6862756a-6fa6-4599-90ab-d6b2b8150917",
+      "name": "Wait 15 Seconds",
+      "webhookId": "267fe3dc-b7ce-48fb-9c7a-ce2999b377e0"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0fcf892-a050-40d6-938f-5b53b11dc1f1",
+              "name": "Full Name",
+              "value": "={{ $json.properties.firstname.value }}",
+              "type": "string"
+            },
+            {
+              "id": "6ddbe9c5-cccd-4fe6-b8c5-9ac9720e1615",
+              "name": "Number",
+              "value": "={{ '91' + $json.properties.phone.value.replace(/[^0-9]/g, '').slice(-10) }}",
+              "type": "string"
+            },
+            {
+              "id": "c57e6bf2-28b2-444f-9040-9c419b5aa353",
+              "name": "Lead Email",
+              "value": "={{ $json.properties.email.value }}",
+              "type": "string"
+            },
+            {
+              "id": "0204c5c4-aaa3-4e5e-b179-15e53a343b6d",
+              "name": "Status",
+              "value": "PENDING",
+              "type": "string"
+            },
+            {
+              "id": "3ff1f098-92cc-4804-967c-2b2d74aa2e4a",
+              "name": "Form Name",
+              "value": "={{ $json.properties.contact_source.value }}",
+              "type": "string"
+            },
+            {
+              "id": "0299a701-9c4d-4b3d-ab10-b27055e2ce49",
+              "name": "Deal Owner",
+              "value": "={{ $json.properties.sdr_owner_name }}",
+              "type": "string"
+            },
+            {
+              "id": "e7d10f15-76d7-4ca3-96ec-54873b91bf84",
+              "name": "Deal Owner Number",
+              "value": "={{ $json.properties.sdr_owner_phone }}",
+              "type": "string"
+            },
+            {
+              "id": "3c376b24-03d6-468e-8beb-004042042f01",
+              "name": "Deal Owner Email",
+              "value": "={{ $json.properties.sdr_owner_email }}",
+              "type": "string"
+            },
+            {
+              "id": "a369b005-f33a-42df-bad1-5f469669fd4a",
+              "name": "Deal Id",
+              "value": "={{ $('Webhook').first().json.body.dealId }}",
+              "type": "string"
+            },
+            {
+              "id": "25a62f4b-eb5a-49f9-9cc9-b6efbdb17c47",
+              "name": "Owner_ID",
+              "value": "={{ $json.properties.hubspot_owner_id.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -16
+      ],
+      "id": "bb6d6e8a-a815-4f9e-92d5-787e124e1fde",
+      "name": "Contact Data"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1088,
+        -16
+      ],
+      "id": "5da74845-14a4-46bc-8495-c4c7f86b5a46",
+      "name": "Process One at a Time"
+    },
+    {
+      "parameters": {
+        "jsCode": "const idToDetails = {\n  \"1080465166\": { name: \"Debkanta Nayak\", phone: \"+91 6364835217\", email: \"Debkanta@Karboncard.com\" },\n  \"1506890440\": { name: \"Harsh Khatri\", phone: \"+91 8904987623\", email: \"Harsh.K@Karboncard.com\" },\n  \"2072897526\": { name: \"Abhishek Bhuyan\", phone: \"+91 7204085862\", email: \"Abhishek.Bhuyan@Karboncard.com\" },\n  \"1403787293\": { name: \"Himanshu Sharma\", phone: \"+91 7411724400\", email: \"Himanshu.Sharma@Karboncard.com\" },\n  \"2077986535\": { name: \"Nanditha V\", phone: \"+91 7204385841\", email: \"Nanditha.Vishakanta@Karboncard.com\" },\n  \"78054956\":   { name: \"Eshita Chauhan\", phone: \"+91 8123107947\", email: \"Eshita.Chauhan@Karboncard.com\" },\n  \"78373572\":   { name: \"Vasanthan B\", phone: \"+91 8050769512\", email: \"Vasanthan.B@Karboncard.com\" },\n  \"81455872\":   { name: \"Abhignan Rakshith\", phone: \"+91 8050025676\", email: \"Abhignan.Rakshith@Karboncard.com\" },\n  \"81455848\":   { name: \"Jeffrey Benjamin\", phone: \"+91 6364360114\", email: \"Jeffrey.Benjamin@Karboncard.com\" },\n  \"81772170\":  { name: \"Ashrith Vathsala\", phone: \"+91 8431037348\", email: \"Ashrith.Vathsala1@Karboncard.com\" }\n};\n\nconst item = items[0];\nconst ownerId = item.json.properties.hubspot_owner_id?.value;\n\nconst details = idToDetails[ownerId] || {\n  name: \"AI Accountant\",\n  phone: \"9008770403\",\n  email: \"hi@aiaccountant.com\"\n};\n\nitem.json.properties.sdr_owner_name = details.name;\nitem.json.properties.sdr_owner_phone = details.phone;\nitem.json.properties.sdr_owner_email = details.email;\n\nreturn [item];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        -16
+      ],
+      "id": "c178dbc7-f80d-4cc4-892f-95cfb57c584d",
+      "name": "Deal_Owner_Data"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkc0do1mKuRIPF3",
+          "mode": "list",
+          "cachedResultName": "Sent - DNP Follow-Ups",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblkc0do1mKuRIPF3"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json[\"Full Name\"] }}",
+            "Deal ID": "={{ $json[\"Deal Id\"] }}",
+            "Deal Owner Number": "={{ $json[\"Deal Owner Number\"] }}",
+            "Lead Number": "={{ $json.Number }}",
+            "Lead Email": "={{ $json[\"Lead Email\"] }}",
+            "Current Stage": "DNP Follow-Up 1",
+            "Deal Owner Email": "={{ $json[\"Deal Owner Email\"] }}",
+            "Deal Owner ID": "={{ $json.Owner_ID }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Current Stage",
+              "displayName": "Current Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Number",
+              "displayName": "Lead Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "1st Follow-up Sent",
+              "displayName": "1st Follow-up Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Delivered",
+              "displayName": "1st Follow-up Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Read",
+              "displayName": "1st Follow-up Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Replied",
+              "displayName": "1st Follow-up Replied",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calculation",
+              "displayName": "Calculation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        -16
+      ],
+      "id": "2b54a151-753d-4bed-9049-1fd4d43f37ab",
+      "name": "Create DNP Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkc0do1mKuRIPF3",
+          "mode": "list",
+          "cachedResultName": "Sent - DNP Follow-Ups",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblkc0do1mKuRIPF3"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Template Used": "={{ $json.template_sent }}",
+            "Lead Number": "={{ $json.number }}",
+            "Status": "ACCEPTED"
+          },
+          "matchingColumns": [
+            "Lead Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Current Stage",
+              "displayName": "Current Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Lead Number",
+              "displayName": "Lead Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Sent",
+              "displayName": "1st Follow-up Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Delivered",
+              "displayName": "1st Follow-up Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Read",
+              "displayName": "1st Follow-up Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Replied",
+              "displayName": "1st Follow-up Replied",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calculation",
+              "displayName": "Calculation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        480
+      ],
+      "id": "fbf9eb67-70a1-495f-9b11-b2f14344c1a6",
+      "name": "Update Status - ACCEPTED1",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkc0do1mKuRIPF3",
+          "mode": "list",
+          "cachedResultName": "Sent - DNP Follow-Ups",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblkc0do1mKuRIPF3"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Error Message": "={{ $json.error?.message || $json.error || 'Unknown error' }}",
+            "Template Used": "={{ $json.template_sent }}",
+            "Lead Number": "={{ $json.number }}",
+            "Status": "FAILED"
+          },
+          "matchingColumns": [
+            "Lead Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Current Stage",
+              "displayName": "Current Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Lead Number",
+              "displayName": "Lead Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Sent",
+              "displayName": "1st Follow-up Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Delivered",
+              "displayName": "1st Follow-up Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Read",
+              "displayName": "1st Follow-up Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "1st Follow-up Replied",
+              "displayName": "1st Follow-up Replied",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Calculation",
+              "displayName": "Calculation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1600,
+        688
+      ],
+      "id": "727d7d20-c543-4d07-930e-1c33729e687d",
+      "name": "Update Status - FAILED1",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "app4Ga3V7xw90ZvaU",
+          "mode": "list",
+          "cachedResultName": "Whatsapp - Master Base",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGQRaqljlapDPAD",
+          "mode": "list",
+          "cachedResultName": "Sent - Whatsapp First Touch",
+          "cachedResultUrl": "https://airtable.com/app4Ga3V7xw90ZvaU/tblGQRaqljlapDPAD"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Number": "={{ $json.number }}",
+            "Current_Stage": "DNP Follow-Up",
+            "DNP Follow-up Status": "ACCEPTED"
+          },
+          "matchingColumns": [
+            "Number"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name ",
+              "displayName": "Full Name ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Current_Stage",
+              "displayName": "Current_Stage",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal ID",
+              "displayName": "Deal ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Lead Email",
+              "displayName": "Lead Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Form Submitted",
+              "displayName": "Form Submitted",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "First Touch Status",
+              "displayName": "First Touch Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "DNP Follow-up Status",
+              "displayName": "DNP Follow-up Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Deal Owner",
+              "displayName": "Deal Owner",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Number",
+              "displayName": "Deal Owner Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner Email",
+              "displayName": "Deal Owner Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Deal Owner ID",
+              "displayName": "Deal Owner ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sent",
+              "displayName": "Sent",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Delivered",
+              "displayName": "Delivered",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Read",
+              "displayName": "Read",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Reply Received",
+              "displayName": "Reply Received",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Template Used",
+              "displayName": "Template Used",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "whatsapp_first_touch_1",
+                  "value": "whatsapp_first_touch_1"
+                },
+                {
+                  "name": "whatsapp_first_touch_with_sdr_1",
+                  "value": "whatsapp_first_touch_with_sdr_1"
+                },
+                {
+                  "name": "2_whatsapp_first_touch_with_sdr",
+                  "value": "2_whatsapp_first_touch_with_sdr"
+                },
+                {
+                  "name": "3_whatsapp_first_touch_with_sdr",
+                  "value": "3_whatsapp_first_touch_with_sdr"
+                }
+              ],
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Sent Message ",
+              "displayName": "Sent Message ",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Error Message",
+              "displayName": "Error Message",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Calculation",
+              "displayName": "Calculation",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        288
+      ],
+      "id": "a3546a5c-7f9d-4e3e-871a-ef45fcb8ebdd",
+      "name": "Update Status - ACCEPTED",
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "Er63oAf0XfghX3Ic",
+          "name": "Airtable Personal Access Token account 2"
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "HTTP Request - Get Associated Contacts": {
+      "main": [
+        [
+          {
+            "node": "Get Contact Data from HubSpot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Contact Data from HubSpot": {
+      "main": [
+        [
+          {
+            "node": "Deal_Owner_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request - Get Associated Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Whatsapp First Touch Mesage3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage3": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name 3": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name 2": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage4": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Template Name ": {
+      "main": [
+        [
+          {
+            "node": "Check if Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Whatsapp First Touch Mesage": {
+      "main": [
+        [
+          {
+            "node": "Attach Template Name ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 15 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contact Data": {
+      "main": [
+        [
+          {
+            "node": "Process One at a Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process One at a Time": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Create DNP Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal_Owner_Data": {
+      "main": [
+        [
+          {
+            "node": "Contact Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create DNP Record": {
+      "main": [
+        [
+          {
+            "node": "Wait 15 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status - ACCEPTED1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Update Status - FAILED1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Success1": {
+      "main": [
+        [
+          {
+            "node": "Update Status - ACCEPTED1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Status - ACCEPTED",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status - FAILED1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "22c0aac0-3341-42e5-8763-07b271a55c6d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45745a8adebf972591cb1c34947d7982ccae58966ae55502975d349f81f9d3fe"
+  },
+  "id": "gCVCBHPIy7l9hLlr",
+  "tags": []
+}
