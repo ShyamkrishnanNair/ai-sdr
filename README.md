@@ -22,7 +22,8 @@ From **first-touch outreach** to **lead qualification**, **demo scheduling/resch
 | `Official Whatsapp First Touch.json`     | Sends the initial WhatsApp message to new leads |
 | `Whatsapp First Touch Reply Workflow.json` | Handles replies, qualification, and scheduling |
 | `Demo Reminder Workflow.json`            | Sends a daily morning WhatsApp reminder of all demos scheduled for that day |
-| `DNP Follow Up Workflow.json`            | Sends a WhatsApp follow-up when deal stage changes to DNP (Did Not Pick), re-engages the lead, and resumes AI SDR handling |
+| `DNP Follow-up Workflow.json`            | Sends a WhatsApp follow-up when deal stage changes to DNP (Did Not Pick) |
+| `DNP Follow-Up Reply Workflow.json`      | Handles replies to DNP follow-ups, updates status, and resumes AI SDR handling |
 
 
 ---
